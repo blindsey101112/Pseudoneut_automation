@@ -43,8 +43,6 @@ sample.ids <- lapply(plate.ref.index$ref ,
                      }) %>% bind_rows()
 sample.ids$plate <- sub("_", "-", sample.ids$plate)
 
-luminescence.files <- luminescence.files %>% filter(file!="Luminescence Quick Read 2023.02.02 10_49_36 6-24.xlsx")
-
 ##loop through files
 loop.log <- lapply(seq(1, nrow(luminescence.files)),
                    function(row.n){
@@ -213,7 +211,7 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                      print(paste0("Number ", row.n, " of ", nrow(luminescence.files), " complete"))
                      }) 
 
-#error plates 6-24. 2 plates with the same name. Luminescence Quick Read 2023.02.02 10_49_36 6-24.xlsx
+
 
 
 
