@@ -4,7 +4,6 @@ library(stringr)
 library(dplyr)
 library(ggplot2)
 
-
 ###Read in .xlsx file
 input.files <- list.files("./input/")
 
@@ -43,12 +42,10 @@ sample.ids <- lapply(plate.ref.index$ref ,
                      }) %>% bind_rows()
 sample.ids$plate <- sub("_", "-", sample.ids$plate)
 
-luminescence.files <- luminescence.files %>% filter(file!="Luminescence Quick Read 2023.02.02 10_49_36 6-24.xlsx")
 
 ##loop through files
 loop.log <- lapply(seq(1, nrow(luminescence.files)),
                    function(row.n){
-                     run.num <- luminescence.files$run[row.n]
                      file.name <- luminescence.files$file[row.n]
                      run.name <-  str_extract(file.name, "\\d+-\\d+.xlsx")
                      run.name <- sub(".xlsx", "", run.name)
@@ -58,6 +55,7 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                      dir.create(paste0("./output/run",  run.name))
                      dir.create(paste0("./output/run",  run.name, "/norm_virus"))
                      dir.create(paste0("./output/run",  run.name, "/norm_neg"))
+                     #excel.file <- readxl::read_excel(paste0("./input/test/B1-1_Luminescence Quick Read 2022.11.09 11_54_37 AM1 1-1.xlsx"), sheet=2)
                      suppressMessages(excel.file <- readxl::read_excel(paste0("./input/", file.name), sheet=2))
                      excel.file <- excel.file[c(9:16), c(6:17)]
                      cell.only.mean <- mean(as.numeric(excel.file[8,])[1:4])
@@ -130,7 +128,18 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                        ##pseduovirus normalisation
                        pv.nls.try <- try(
                          {  
-                           nls.model.pseudo <- nls(normalised.values.pseudo~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
+                           #define function
+                           f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
+                           #linearise to ger staring values
+                           fm0 <- nls(log(normalised.values.pseudo) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
+                           #run model
+                           nls.model.pseudo <- nls(normalised.values.pseudo~f(conc, LogIC50, HillSlope), data=sample.df, 
+                                                   start=coef(fm0), 
+                                                   algorithm = "port",
+                                                   lower = c(LogIC50=0.5, HillSlope=-1),
+                                                   upper=c(LogIC50=3, HillSlope=0))
+                           
+                           #nls.model.pseudo <- nls(normalised.values.pseudo~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
                            nls.pseudo.pars <- nls.model.pseudo$m$getPars()
                            nls.pseudo.prediction <- 100/(1 + 10^((nls.pseudo.pars[1] - predict.conc) * nls.pseudo.pars[2]))
                            nls.pseudo.logic50 <- nls.pseudo.pars[1]
@@ -167,7 +176,20 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                        ##negative control normalisation
                        neg.nls.try <- try(
                          {  
-                           nls.model.neg <- nls(normalised.values.neg~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
+                           
+                           #define function
+                           f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
+                           #linearise to ger staring values
+                           fm0 <- nls(log(normalised.values.neg) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
+                           #run model
+                           nls.model.neg <- nls(normalised.values.neg~f(conc, LogIC50, HillSlope), data=sample.df, 
+                                                   start=coef(fm0), 
+                                                   algorithm = "port",
+                                                   lower = c(LogIC50=0.5, HillSlope=-1),
+                                                   upper=c(LogIC50=3, HillSlope=0))
+                           
+                           
+                           #nls.model.neg <- nls(normalised.values.neg~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
                            nls.neg.pars <- nls.model.neg$m$getPars()
                            nls.neg.prediction <- 100/(1 + 10^((nls.neg.pars[1] - predict.conc) * nls.neg.pars[2]))
                            nls.neg.logic50 <- nls.neg.pars[1]
@@ -213,7 +235,6 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                      print(paste0("Number ", row.n, " of ", nrow(luminescence.files), " complete"))
                      }) 
 
-#error plates 6-24. 2 plates with the same name. Luminescence Quick Read 2023.02.02 10_49_36 6-24.xlsx
 
 
 
