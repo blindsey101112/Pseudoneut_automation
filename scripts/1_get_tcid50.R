@@ -135,8 +135,8 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                            nls.model.pseudo <- nls(normalised.values.pseudo~f(conc, LogIC50, HillSlope), data=sample.df, 
                                                    start=coef(fm0), 
                                                    algorithm = "port",
-                                                   lower = c(LogIC50=0.5, HillSlope=-1),
-                                                   upper=c(LogIC50=3, HillSlope=0))
+                                                   lower = c(LogIC50=0.5, HillSlope=-3),
+                                                   upper=c(LogIC50=5, HillSlope=0))
                            
                            #nls.model.pseudo <- nls(normalised.values.pseudo~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
                            nls.pseudo.pars <- nls.model.pseudo$m$getPars()
@@ -184,8 +184,8 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                            nls.model.neg <- nls(normalised.values.neg~f(conc, LogIC50, HillSlope), data=sample.df, 
                                                    start=coef(fm0), 
                                                    algorithm = "port",
-                                                   lower = c(LogIC50=0.5, HillSlope=-1),
-                                                   upper=c(LogIC50=3, HillSlope=0))
+                                                   lower = c(LogIC50=0.5, HillSlope=-3),
+                                                   upper=c(LogIC50=5, HillSlope=0))
                            
                            
                            #nls.model.neg <- nls(normalised.values.neg~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
