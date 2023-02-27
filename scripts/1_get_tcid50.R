@@ -42,7 +42,6 @@ sample.ids <- lapply(plate.ref.index$ref ,
                      }) %>% bind_rows()
 sample.ids$plate <- sub("_", "-", sample.ids$plate)
 
-
 ##loop through files
 loop.log <- lapply(seq(1, nrow(luminescence.files)),
                    function(row.n){
@@ -234,6 +233,7 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                      
                      print(paste0("Number ", row.n, " of ", nrow(luminescence.files), " complete"))
                      }) 
+
 
 
 
