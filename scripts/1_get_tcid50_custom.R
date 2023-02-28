@@ -128,17 +128,17 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                        pv.nls.try <- try(
                          {  
                            #define function
-                           #f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
+                           f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
                            #linearise to ger staring values
-                           #fm0 <- nls(log(normalised.values.pseudo) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
+                           fm0 <- nls(log(normalised.values.pseudo) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
                            #run model
-                           #nls.model.pseudo <- nls(normalised.values.pseudo~f(conc, LogIC50, HillSlope), data=sample.df, 
-                                                  # start=coef(fm0), 
-                                                 #  algorithm = "port",
-                                                 #  lower = c(LogIC50=0.01, HillSlope=-5),
-                                                  # upper=c(LogIC50=5, HillSlope=0))
+                           nls.model.pseudo <- nls(normalised.values.pseudo~f(conc, LogIC50, HillSlope), data=sample.df, 
+                                                   start=coef(fm0), 
+                                                   algorithm = "port",
+                                                   lower = c(LogIC50=0.01, HillSlope=-5),
+                                                   upper=c(LogIC50=5, HillSlope=0))
                            
-                           nls.model.pseudo <- nls(normalised.values.pseudo~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
+                           #nls.model.pseudo <- nls(normalised.values.pseudo~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
                            nls.pseudo.pars <- nls.model.pseudo$m$getPars()
                            nls.pseudo.prediction <- 100/(1 + 10^((nls.pseudo.pars[1] - predict.conc) * nls.pseudo.pars[2]))
                            nls.pseudo.logic50 <- nls.pseudo.pars[1]
@@ -177,18 +177,18 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                          {  
                            
                            #define function
-                          # f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
+                           f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
                            #linearise to ger staring values
-                           #fm0 <- nls(log(normalised.values.neg) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
+                           fm0 <- nls(log(normalised.values.neg) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
                            #run model
-                           #nls.model.neg <- nls(normalised.values.neg~f(conc, LogIC50, HillSlope), data=sample.df, 
-                                            #       start=coef(fm0), 
-                                              #     algorithm = "port",
-                                              #     lower = c(LogIC50=0.01, HillSlope=-5),
-                                               #    upper=c(LogIC50=5, HillSlope=0))
+                           nls.model.neg <- nls(normalised.values.neg~f(conc, LogIC50, HillSlope), data=sample.df, 
+                                                   start=coef(fm0), 
+                                                   algorithm = "port",
+                                                   lower = c(LogIC50=0.01, HillSlope=-5),
+                                                   upper=c(LogIC50=5, HillSlope=0))
                            
                            
-                           nls.model.neg <- nls(normalised.values.neg~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
+                           #nls.model.neg <- nls(normalised.values.neg~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
                            nls.neg.pars <- nls.model.neg$m$getPars()
                            nls.neg.prediction <- 100/(1 + 10^((nls.neg.pars[1] - predict.conc) * nls.neg.pars[2]))
                            nls.neg.logic50 <- nls.neg.pars[1]
