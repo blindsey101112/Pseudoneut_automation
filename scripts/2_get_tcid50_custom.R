@@ -1,9 +1,17 @@
 ################################################################################
-# Manually change parameter
-#
-#
-#
-#
+# Manually change parameters
+
+
+best.guess.LogIC50=3.5
+best.guess.HillSlope=-1
+
+lower.LogIC50 = 0.1
+upper.LogIC50 = 5
+
+lower.hillslope = -10
+upper.hillslope = 0
+
+
 ################################################################################
 
 
@@ -139,16 +147,16 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                            #define function
                            f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
                            #linearise to ger staring values
-                           fm0 <- nls(log(normalised.values.pseudo) ~ log(f(conc, LogIC50, HillSlope)), 
-                                      data=sample.df, 
-                                      start = c(LogIC50=0.3, HillSlope=-1))
+                           #fm0 <- nls(log(normalised.values.pseudo) ~ log(f(conc, LogIC50, HillSlope)), 
+                            #          data=sample.df, 
+                             #         start = c(LogIC50=0.3, HillSlope=-1))
                            #run model
                            nls.model.pseudo <- nls(normalised.values.pseudo~f(conc, LogIC50, HillSlope), 
                                                    data=sample.df, 
-                                                   start=coef(fm0), 
+                                                   start=c(LogIC50=best.guess.LogIC50, HillSlope=best.guess.HillSlope), 
                                                    algorithm = "port",
-                                                   lower = c(LogIC50=0.01, HillSlope=-5),
-                                                   upper=c(LogIC50=5, HillSlope=0))
+                                                   lower = c(LogIC50=lower.LogIC50, HillSlope=lower.hillslope),
+                                                   upper=c(LogIC50=upper.LogIC50, HillSlope=upper.hillslope))
                            
                            #nls.model.pseudo <- nls(normalised.values.pseudo~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
                            nls.pseudo.pars <- nls.model.pseudo$m$getPars()
@@ -191,13 +199,14 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                            #define function
                            f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
                            #linearise to ger staring values
-                           fm0 <- nls(log(normalised.values.neg) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
+                           #fm0 <- nls(log(normalised.values.neg) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
                            #run model
-                           nls.model.neg <- nls(normalised.values.neg~f(conc, LogIC50, HillSlope), data=sample.df, 
-                                                   start=coef(fm0), 
-                                                   algorithm = "port",
-                                                   lower = c(LogIC50=0.01, HillSlope=-5),
-                                                   upper=c(LogIC50=5, HillSlope=0))
+                           nls.model.neg <- nls(normalised.values.neg~f(conc, LogIC50, HillSlope), 
+                                                  data=sample.df, 
+                                                  start=c(LogIC50=best.guess.LogIC50, HillSlope=best.guess.HillSlope), 
+                                                  algorithm = "port",
+                                                  lower = c(LogIC50=lower.LogIC50, HillSlope=lower.hillslope),
+                                                  upper=c(LogIC50=upper.LogIC50, HillSlope=upper.hillslope))
                            
                            
                            #nls.model.neg <- nls(normalised.values.neg~100/(1+10^((LogIC50-conc)*HillSlope)), data=sample.df, start=c(LogIC50=2.5, HillSlope=-1))
