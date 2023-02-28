@@ -142,7 +142,7 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                                                    data=sample.df, 
                                                    start=c(LogIC50=2.5, HillSlope=-1),
                                                    algorithm = "port",
-                                                   lower = c(LogIC50=-Inf, HillSlope=-Inf),
+                                                   lower = c(LogIC50=1.3, HillSlope=-Inf),
                                                    upper=c(LogIC50=Inf, HillSlope=0))
                            nls.pseudo.pars <- nls.model.pseudo$m$getPars()
                            nls.pseudo.prediction <- 100/(1 + 10^((nls.pseudo.pars[1] - predict.conc) * nls.pseudo.pars[2]))
@@ -195,9 +195,9 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                            
                            nls.model.neg <- nls(normalised.values.neg~100/(1+10^((LogIC50-conc)*HillSlope)), 
                                                 data=sample.df, 
-                                                start=c(LogIC50=2.5, HillSlope=-1),
+                                                start=c(LogIC50=0.3, HillSlope=-1),
                                                 algorithm = "port",
-                                                lower = c(LogIC50=-Inf, HillSlope=-Inf),
+                                                lower = c(LogIC50=1.3, HillSlope=-Inf),
                                                 upper=c(LogIC50=Inf, HillSlope=0))
                            nls.neg.pars <- nls.model.neg$m$getPars()
                            nls.neg.prediction <- 100/(1 + 10^((nls.neg.pars[1] - predict.conc) * nls.neg.pars[2]))
