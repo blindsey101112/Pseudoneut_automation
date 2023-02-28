@@ -1,3 +1,12 @@
+################################################################################
+# Manually change parameter
+#
+#
+#
+#
+################################################################################
+
+
 library(readxl)
 library(tidyr)
 library(stringr)
@@ -130,9 +139,12 @@ loop.log <- lapply(seq(1, nrow(luminescence.files)),
                            #define function
                            f <- function(conc,LogIC50,HillSlope) {100/(1+10^((LogIC50-conc)*HillSlope))}
                            #linearise to ger staring values
-                           fm0 <- nls(log(normalised.values.pseudo) ~ log(f(conc, LogIC50, HillSlope)), data=sample.df, start = c(LogIC50=2, HillSlope=-1))
+                           fm0 <- nls(log(normalised.values.pseudo) ~ log(f(conc, LogIC50, HillSlope)), 
+                                      data=sample.df, 
+                                      start = c(LogIC50=0.3, HillSlope=-1))
                            #run model
-                           nls.model.pseudo <- nls(normalised.values.pseudo~f(conc, LogIC50, HillSlope), data=sample.df, 
+                           nls.model.pseudo <- nls(normalised.values.pseudo~f(conc, LogIC50, HillSlope), 
+                                                   data=sample.df, 
                                                    start=coef(fm0), 
                                                    algorithm = "port",
                                                    lower = c(LogIC50=0.01, HillSlope=-5),
